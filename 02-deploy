@@ -4,24 +4,24 @@
 source ./scripts/utils
 
 # ingress-nginx
+# specify version <4.5.0 for consistency with k8s version v1.22.5
 kustomize build --enable-helm ingress-nginx | kubectl -n ingress-nginx apply -f -
-# wait for the ingress admission to be ready before proceeding
+# wait for the ingress admission to be ready before proceeding,
+# otherwise deployment of other BBs will fail
 ingress_admission_ready_check
 
-# identity-service
+# identity-service (Keycloak)
 kustomize build --enable-helm identity-service | kubectl -n um apply -f -
 
 # the identity-api is protected by a gatekeeper instance that relies upon
 # a Keycloak client that must be created
 createIdentityApiClient
 
-# create test users
+# create test users - e.g. those assumed by the Application Hub
 users=("eric" "bob" "alice")
 for user in "${users[@]}"; do
   createUser "${user}"
 done
-
-echo -e "\n\nZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n\n"
 
 # application-hub
 kustomize build --enable-helm application-hub | kubectl -n app-hub apply -f -
