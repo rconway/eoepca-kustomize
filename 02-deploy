@@ -43,3 +43,27 @@ kustomize build --enable-helm application-hub | kubectl -n proc apply -f -
   --name="Application Hub OIDC Client" \
   --secret=changeme \
   --description="Client to be used by Application Hub for OIDC integration"
+
+# Minio
+kustomize build --enable-helm minio | kubectl -n rm apply -f -
+
+# ADES (zoo-dru)
+# No workspace integration, so ADES will stage-out to minio (eoepca bucket)
+kustomize build --enable-helm zoo-dru | kubectl -n zoo apply -f -
+
+# zoo-dru is protected by a gatekeeper instance that relies upon
+# a Keycloak client that must be created
+./scripts/create-client \
+  -a http://keycloak.192-168-49-2.nip.io \
+  -i http://identity-api.192-168-49-2.nip.io \
+  -r master \
+  -u admin \
+  -p changeme \
+  -c admin-cli \
+  --id=ades \
+  --name="ADES Gatekeeper" \
+  --secret=changeme \
+  --description="Client to be used by ADES Gatekeeper" \
+  --resource="eric" --uris='/eric/*' --scopes=view --users="eric" \
+  --resource="bob" --uris='/bob/*' --scopes=view --users="bob" \
+  --resource="alice" --uris='/alice/*' --scopes=view --users="alice"
