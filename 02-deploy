@@ -24,7 +24,11 @@ for user in "${users[@]}"; do
 done
 
 # application-hub
-kustomize build --enable-helm application-hub | kubectl -n app-hub apply -f -
+# using the 'proc' namespace - since it seems that the helm chart is effectively
+# hard-coded for this - ref...
+# - https://github.com/EOEPCA/helm-charts/blob/main/charts/application-hub/files/hub/jupyter_config.py#L171
+# - https://github.com/EOEPCA/helm-charts/blob/main/charts/application-hub/files/hub/jupyter_config.py#L238
+kustomize build --enable-helm application-hub | kubectl -n proc apply -f -
 
 # the application-hub integrates with Keycloak via OIDC for user authentication
 # this relies upon a Keycloak client that must be created
