@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+clusterName="${1:-eoepca}"
+
+# create cluster
+minikube -p "${clusterName}" start --kubernetes-version=v1.22.5 --ports=80:80,443:433
+minikube profile "${clusterName}"
