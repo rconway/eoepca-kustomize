@@ -68,7 +68,7 @@ helmCharts:
 
           db:
             pvc:
-              storageClassName: 
+              storageClassName: standard
         
         singleuser:
           image:
